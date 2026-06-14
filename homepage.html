@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accueil</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.12);
+      --glass-border: rgba(255, 255, 255, 0.20);
+      --glass-header: rgba(255, 255, 255, 0.08);
+      --glass-header-border: rgba(255, 255, 255, 0.15);
+      --text: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.50);
+      --radius-card: 18px;
+      --radius-pill: 32px;
+      --gap: clamp(12px, 2vw, 20px);
+      --glass-search: rgba(255, 255, 255, 0.10);
+      --glass-hover: rgba(255, 255, 255, 0.20);
+      --glass-focus-border: rgba(255, 255, 255, 0.40);
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      background-attachment: fixed;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      display: flex;
+      align-items: stretch;
+    }
+
+    #app {
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: clamp(16px, 3vw, 40px);
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+      flex: 1;
+      min-height: 0;
+    }
+
+    #zone-clock {
+      background: var(--glass-header);
+      border: 1px solid var(--glass-header-border);
+      border-radius: var(--radius-card);
+      padding: clamp(14px, 2vw, 24px) clamp(20px, 3vw, 36px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 4px;
+      backdrop-filter: blur(12px);
+    }
+
+    #clock-time {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 200;
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+
+    #clock-date {
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    #zone-links {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(clamp(180px, 18vw, 260px), 1fr));
+      gap: var(--gap);
+      align-content: start;
+      overflow-y: auto;
+    }
+
+    .link-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      aspect-ratio: 1.618 / 1;
+      padding: clamp(30px, 1.5vw, 16px) clamp(4px, 2vw, 22px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(10px, 1.5vw, 16px);
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .link-card:hover {
+      transform: translateY(-5px);
+      background: var(--glass-hover);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .link-card:active {
+      transform: translateY(-2px);
+    }
+
+    .link-icon {
+      flex-shrink: 0;
+      width: clamp(32px, 4vw, 48px);
+      height: clamp(32px, 4vw, 48px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(22px, 3vw, 36px);
+      border-radius: 8px;
+    }
+
+    .link-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .link-name {
+      font-size: clamp(0.8rem, 1.3vw, 1rem);
+      padding-top: clamp(3px, 2vw, 10px);
+      font-weight: 500;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+
+    #zone-search {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--glass-search);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-pill);
+      padding: clamp(10px, 1.5vw, 16px) clamp(16px, 2.5vw, 28px);
+      backdrop-filter: blur(12px);
+      transition: background 0.18s ease, border-color 0.18s ease;
+    }
+
+    #zone-search:focus-within {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: var(--glass-focus-border);
+    }
+
+    #search-icon {
+      font-size: clamp(16px, 2vw, 22px);
+      flex-shrink: 0;
+      color: var(--text-muted);
+    }
+
+    #search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: clamp(0.9rem, 1.5vw, 1.15rem);
+      font-family: inherit;
+    }
+
+    #search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    #btn-fullscreen {
+      position: fixed;
+      top: 14px;
+      right: 18px;
+      background: var(--glass-header);
+      border: 1px solid var(--glass-header-border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: clamp(14px, 2vw, 20px);
+      padding: 5px 9px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: opacity 0.3s;
+      z-index: 10;
+    }
+
+    #btn-fullscreen:hover {
+      color: var(--text);
+      background: var(--glass-bg);
+    }
+
+    :fullscreen #btn-fullscreen,
+    :-webkit-full-screen #btn-fullscreen {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <button id="btn-fullscreen" title="Plein écran (F)">⛶</button>
+  <div id="app">
+    <div id="zone-clock"></div>
+    <div id="zone-links"></div>
+    <div id="zone-search"></div>
+  </div>
+
+  <script>
+    // ===== CONFIGURATION — modifiez ici =====
+    const CONFIG = {
+      links: [
+        { name: "Canal+",    url: "https://www.canalplus.com/" },
+        { name: "TF1",       url: "https://www.tf1.fr/tf1/replay" },
+        { name: "M6",        url: "https://www.m6.fr/m6" },
+        { name: "Twitch",    url: "https://twitch.tv" },
+        { name: "Youtube",   url: "https://youtube.com" },
+        { name: "Spotify",   url: "https://open.spotify.com/" },
+        { name: "Prime video",   url: "https://www.primevideo.com/" },
+        { name: "Météo",   url: "https://www.meteociel.fr/previsions/12455/l_hermitage.htm" },
+      ],
+      searchEngine: "youtube", // "youtube" | "google"
+    };
+    // ===== FIN CONFIG =====
+
+    // --- Horloge ---
+    function renderClock() {
+      document.getElementById('zone-clock').innerHTML = `
+        <div id="clock-time"></div>
+        <div id="clock-date"></div>
+      `;
+      tickClock();
+      setInterval(tickClock, 1000);
+    }
+
+    function tickClock() {
+      const now = new Date();
+      const time = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit'});
+      const date = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+      document.getElementById('clock-time').textContent = time;
+      document.getElementById('clock-date').textContent = date.charAt(0).toUpperCase() + date.slice(1);
+    }
+
+    renderClock();
+
+    // --- Liens ---
+    function faviconUrl(url) {
+      try {
+        const domain = new URL(url).hostname;
+        return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+      } catch {
+        return null;
+      }
+    }
+
+    function renderLinks() {
+      const container = document.getElementById('zone-links');
+      container.innerHTML = '';
+
+      CONFIG.links.forEach(link => {
+        const card = document.createElement('a');
+        card.className = 'link-card';
+        card.href = link.url;
+
+        const iconWrapper = document.createElement('div');
+        iconWrapper.className = 'link-icon';
+
+        if (link.icon) {
+          // emoji ou caractère custom
+          iconWrapper.textContent = link.icon;
+        } else {
+          const url = faviconUrl(link.url);
+          if (url) {
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = link.name;
+            img.onerror = () => {
+              iconWrapper.textContent = link.name.charAt(0).toUpperCase() || '?';
+              img.remove();
+            };
+            iconWrapper.appendChild(img);
+          } else {
+            iconWrapper.textContent = link.name.charAt(0).toUpperCase() || '?';
+          }
+        }
+
+        const label = document.createElement('span');
+        label.className = 'link-name';
+        label.textContent = link.name;
+
+        card.appendChild(iconWrapper);
+        card.appendChild(label);
+        container.appendChild(card);
+      });
+    }
+
+    renderLinks();
+
+    // --- Recherche ---
+    function renderSearch() {
+      const zone = document.getElementById('zone-search');
+      const engineLabel = CONFIG.searchEngine === 'google' ? 'Google' : 'YouTube';
+      zone.innerHTML = `
+        <span id="search-icon"></span>
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Rechercher sur ${engineLabel}..."
+          autocomplete="off"
+          spellcheck="false"
+        >
+      `;
+
+      document.getElementById('search-input').addEventListener('keydown', e => {
+        if (e.key !== 'Enter') return;
+        const q = e.target.value.trim();
+        if (!q) return;
+        const base = CONFIG.searchEngine === 'google'
+          ? 'https://www.google.com/search?q='
+          : 'https://www.youtube.com/results?search_query=';
+        window.location.href = base + encodeURIComponent(q);
+      });
+    }
+
+    renderSearch();
+
+    // Focus automatique au chargement
+    window.addEventListener('load', () => {
+      document.getElementById('search-input')?.focus();
+    });
+
+    // --- Plein écran ---
+    function requestFS() {
+      const el = document.documentElement;
+      const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+      if (fn) fn.call(el).catch(() => {});
+    }
+
+    function toggleFS() {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        const exitFn = document.exitFullscreen || document.webkitExitFullscreen;
+        if (exitFn) exitFn.call(document).catch(() => {});
+      } else {
+        requestFS();
+      }
+    }
+
+    // Tentative silencieuse au chargement
+    window.addEventListener('load', requestFS);
+
+    // Fallback : premier clic n'importe où sur la page
+    document.addEventListener('click', requestFS, { once: true });
+
+    // Touche F pour basculer
+    document.addEventListener('keydown', e => {
+      if ((e.key === 'f' || e.key === 'F') && e.target.tagName !== 'INPUT') toggleFS();
+    });
+
+    document.getElementById('btn-fullscreen').addEventListener('click', e => {
+      e.stopPropagation(); // ne pas déclencher le listener once:true
+      toggleFS();
+    });
+  </script>
+</body>
+</html>
