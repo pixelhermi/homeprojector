@@ -464,9 +464,6 @@
     // Tentative silencieuse au chargement
     window.addEventListener('load', requestFS);
 
-    // Fallback : premier clic n'importe où sur la page
-    document.addEventListener('click', requestFS, { once: true });
-
     // Touche F pour basculer
     document.addEventListener('keydown', e => {
       if ((e.key === 'f' || e.key === 'F') && e.target.tagName !== 'INPUT') toggleFS();
