@@ -368,31 +368,76 @@
         `;
 
         const list = zone.querySelector('.videos-list');
-        videos.forEach((video, index) => {
-          const row = document.createElement('div');
+        videos.forEach(video => {
+          const row = document.createElement("div");
+          
           row.className = 'video-row';
-
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = video.url;
           link.target = '_blank';
           link.className = 'video-link';
           link.textContent = video.title;
+          link.target = "_blank";
 
           row.appendChild(link);
           list.appendChild(row);
         });
 
-      } catch (err) {
-        zone.innerHTML = `
-          <div class="videos-title">À regarder</div>
-          <div class="videos-error">
-            Impossible de charger le fichier
-          </div>
-        `;
-      }
-    }
+              } catch (err) {
+                zone.innerHTML = `
+                  <div class="videos-title">À regarder</div>
+                  <div class="videos-error">
+                    Impossible de charger le fichier
+                  </div>
+                `;
+              }
+            }
 
     renderVideos();
+    async function handleDelete(videoId, rowElement) {
+      try {
+        const res = await fetch(
+          `https://api.github.com/repos/${OWNER}/${REPO}/contents/videolinks.json`,
+          {
+            headers: {
+              Authorization: `Bearer ${GITHUB_TOKEN}`,
+              Accept: "application/vnd.github+json"
+            }
+          }
+        );
+
+        const file = await res.json();
+        const videos = JSON.parse(atob(file.content));
+
+        // suppression par ID
+        const updated = videos.filter(v => v.id !== videoId);
+
+        const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2))))
+
+        await fetch(
+          `https://api.github.com/repos/${OWNER}/${REPO}/contents/videolinks.json`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${GITHUB_TOKEN}`,
+              Accept: "application/vnd.github+json"
+            },
+            body: JSON.stringify({
+              message: `delete video ${videoId}`,
+              content: newContent,
+              sha: file.sha
+            })
+          }
+        );
+
+        // UI immédiate
+        rowElement.remove();
+
+      } catch (err) {
+        console.error(err);
+        alert("Erreur suppression vidéo");
+      }
+    }
     // --- Recherche ---
     function renderSearch() {
       const zone = document.getElementById('zone-search');

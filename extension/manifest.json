@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+
+  "name": "Ajouter au pixproj",
+  "version": "1.0",
+
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "notifications"
+  ],
+
+  "host_permissions": [
+    "https://api.github.com/*"
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+
+  "background": {
+    "scripts": ["config.local.js", "background.js"]
+  }
+}
