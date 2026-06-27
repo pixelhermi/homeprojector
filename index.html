@@ -378,26 +378,7 @@
           link.className = 'video-link';
           link.textContent = video.title;
 
-          const remove = document.createElement('button');
-          remove.className = 'video-remove';
-          remove.textContent = '✕';
-
-          remove.onclick = () => {
-            row.remove();
-
-            /*
-              Pour l’instant :
-              suppression uniquement visuelle.
-
-              Plus tard :
-              extension navigateur + API
-              permettront une vraie suppression persistante.
-            */
-          };
-
           row.appendChild(link);
-          row.appendChild(remove);
-
           list.appendChild(row);
         });
 
